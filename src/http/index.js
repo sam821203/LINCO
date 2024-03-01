@@ -67,3 +67,15 @@ export const GET = (name, callback, params) => {
             throw error
         })
 }
+
+export const POST = (name, callback, params) => {
+    const url = params ? `${name}?${new URLSearchParams(params).toString()}` : name
+    return apiInstance
+        .post(url, { raw: false })
+        .then((response) => {
+            if (callback) callback(response)
+        })
+        .catch((error) => {
+            throw error
+        })
+}
