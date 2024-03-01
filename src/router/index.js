@@ -1,26 +1,34 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Main from '../views/Main.vue'
-import Home from '../views/Home.vue'
-import User from '../views/User.vue'
+import HomeView from '../views/HomeView.vue'
+
+const about = () => import('../views/AboutView.vue')
+const mock = () => import('../views/MockView.vue')
+const filterFunction = () => import('../views/FilterFunctionView.vue')
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      component: Main,
-      children: [
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
         {
-          path: '/home',
-          component: Home
+            path: '/',
+            name: 'home',
+            component: HomeView,
         },
         {
-          path: '/user',
-          component: User
-        }
-      ]
-    }
-  ]
+            path: '/about',
+            name: 'about',
+            component: about,
+        },
+        {
+            path: '/mock',
+            name: 'mock',
+            component: mock,
+        },
+        {
+            path: '/filter-function',
+            name: 'filterFunction',
+            component: filterFunction,
+        },
+    ],
 })
 
 export default router

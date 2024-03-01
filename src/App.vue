@@ -1,80 +1,90 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import { ref } from 'vue'
+
+const leftDrawerOpen = ref(false)
+const toggleLeftDrawer = () => (leftDrawerOpen.value = !leftDrawerOpen.value)
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/home">Home </RouterLink>
-        <RouterLink to="/user">User</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+    <q-layout view="lHh Lpr lFf" class="bg-white">
+        <q-header elevated>
+            <q-toolbar>
+                <q-btn flat dense round @click="toggleLeftDrawer" aria-label="Menu" icon="menu" />
+                <q-toolbar-title> Quasar App </q-toolbar-title>
+            </q-toolbar>
+        </q-header>
+        <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
+            <q-list>
+                <q-item-label header>Essential Links</q-item-label>
+                <q-item to="/">
+                    <q-item-section avatar>
+                        <q-icon name="home" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Home</q-item-label>
+                    </q-item-section>
+                </q-item>
+                <q-item to="/about">
+                    <q-item-section avatar>
+                        <q-icon name="description" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>About</q-item-label>
+                    </q-item-section>
+                </q-item>
+                <q-item to="/filter-function">
+                    <q-item-section avatar>
+                        <q-icon name="description" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Filter function</q-item-label>
+                    </q-item-section>
+                </q-item>
+                <q-item to="/mock">
+                    <q-item-section avatar>
+                        <q-icon name="description" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>Mock Data</q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+        </q-drawer>
+        <q-page-container>
+            <router-view />
+        </q-page-container>
+    </q-layout>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+    width: 100%;
+    .wrapper {
+        display: flex;
+        place-items: flex-start;
+        flex-wrap: wrap;
+        background-color: rgb(255, 255, 255);
+    }
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
+    width: 100%;
+    padding: 1rem;
     font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+    text-align: center;
+    a {
+        display: inline-block;
+        border-left: 1px solid var(--color-border);
+        &:first-of-type {
+            border: 0;
+        }
+        &.router-link-exact-active {
+            color: var(--color-text);
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
 }
 </style>
