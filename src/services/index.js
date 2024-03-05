@@ -1,11 +1,12 @@
 import axios from 'axios'
+import Cookie from 'js-cookie'
 
 const axiosDefaults = {
     headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        Accept: 'application/json',
-        timeout: 120000,
+        'content-type': 'application/json',
     },
+    timeout: 120000,
+    // baseURL: '/cpi',
 }
 
 const apiInstance = axios.create(axiosDefaults)
@@ -16,7 +17,6 @@ const beforeRequest = (config) => config
 // 請求中網路連線錯誤
 const requestFailed = (error) => Promise.reject(error)
 
-// 處理成功 status：201/202...
 const successhandler = {
     200: (res) => {
         const data = res?.data
@@ -26,18 +26,11 @@ const successhandler = {
 }
 
 // 回傳成功攔截器
-const responseSuccess = (response) => {
-    const config = response?.config
-    if (config.raw) return response
-    if (200 <= response.status && response.status < 300) {
-        return successhandler[response.status](response)
-    }
-    throw new Error('API Error! Invalid status code!')
-}
+const responseSuccess = (response) => successhandler[response.status](response)
 
 const errorhandler = {
     401: () => '您未登錄，或登入已逾時，請先登入！',
-    404: () => '您未登錄，或登入已逾時，請先登入！',
+    404: () => '找不到資源！',
     500: () => '伺服器內部錯誤！',
     default: () => '系統異常，請重新登入！',
 }
@@ -57,9 +50,17 @@ apiInstance.interceptors.request.use(beforeRequest, requestFailed)
 apiInstance.interceptors.response.use(responseSuccess, responseFailed)
 
 export const GET = (name, callback, params) => {
-    const url = params ? `${name}?${new URLSearchParams(params).toString()}` : name
+    const data = new URLSearchParams(params).toString()
+    const url = data ? `${name}?${data}` : name
     return apiInstance
-        .get(url, { raw: false })
+        .get(url, {
+            // data,
+            // requireBase: 'AA',
+            // headers: {
+            //     'X-Auth-token': 'fd091a4321c9d42d5f0ed817d7e90ed7c82820ab1011864c40034559274713b1',
+            // },
+            raw: false,
+        })
         .then((response) => {
             if (callback) callback(response)
         })
@@ -68,12 +69,14 @@ export const GET = (name, callback, params) => {
         })
 }
 
-export const POST = (name, callback, params) => {
-    const url = params ? `${name}?${new URLSearchParams(params).toString()}` : name
+export const POST = (name, data) => {
     return apiInstance
-        .post(url, { raw: false })
+        .post(name, data)
         .then((response) => {
-            if (callback) callback(response)
+            // TODO: 整理放置 token 的位置
+            Cookie.set('token', response.token, {
+                expires: 1,
+            })
         })
         .catch((error) => {
             throw error

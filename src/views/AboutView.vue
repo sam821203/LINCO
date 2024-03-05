@@ -1,5 +1,5 @@
 <script setup>
-import { apiResponsible } from '../http/apis/responsible.js'
+import { apiResponsible } from '../services/apis/responsible.js'
 import { ref } from 'vue'
 
 const data = ref(null)

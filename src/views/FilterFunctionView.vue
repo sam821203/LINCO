@@ -1,5 +1,5 @@
 <script setup>
-import { apiBusiness } from '../http/apis/business'
+import { apiBusiness } from '../services/apis/business'
 import { ref } from 'vue'
 
 const data = ref(null)
