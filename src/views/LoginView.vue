@@ -1,8 +1,8 @@
 <script setup>
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
-import { reactive, ref, onMounted } from 'vue'
-import { apiMenu, apiGetMac, apiSignIn } from '../services/apis/auth'
+import { reactive, ref } from 'vue'
+import { apiMenu } from '../services/apis/auth'
 import { useStore } from '../stores/index'
 
 const $q = useQuasar()
@@ -10,39 +10,19 @@ const router = useRouter()
 
 const accept = ref(false)
 const myForm = ref(null)
-const macCode = ref(null)
 const formData = reactive({
     username: '',
     password: '',
 })
 
+const menuItems = ref([
+    { to: '/', icon: 'home', label: 'Home' },
+    { to: '/about', icon: 'description', label: 'About' },
+    { to: '/filter-function', icon: 'description', label: 'Filter function' },
+    { to: '/mock', icon: 'description', label: 'Mock Data' },
+])
+
 const getMenu = useStore().useMenuStore()
-
-const change = (num) => {
-    // 批樣修改方式
-    // getMenu.$patch(() => {
-    //     getMenu.count++
-    // })
-    getMenu.setCount(num)
-}
-
-const signIn = (userObj) => {
-    apiSignIn(userObj, (result) => {
-        console.log('result: ', result)
-    })
-}
-
-const devGetMac = (uid) => {
-    apiGetMac(uid, (result) => {
-        macCode.value = result
-        const userObj = {
-            uid: formData.username,
-            mac: macCode.value,
-        }
-
-        signIn(userObj)
-    })
-}
 
 const onSubmit = async () => {
     if (accept.value !== true) {
@@ -66,9 +46,7 @@ const onSubmit = async () => {
             // 表單驗證通過
             await apiMenu.getMenu(formData)
 
-            const uid = { uid: formData.username }
-
-            devGetMac(uid)
+            getMenu.setMenu(menuItems.value)
 
             // 取得菜單的資料，將其存入 store 中
             // 跳轉到首頁
@@ -90,8 +68,6 @@ const onReset = () => {
 <template>
     <div class="login-container q-pa-md" style="max-width: 400px">
         <h6>登入系統</h6>
-        <button @click="change(2)">點擊</button>
-        <div>{{ getMenu.count }}</div>
         <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" ref="myForm">
             <q-input
                 filled

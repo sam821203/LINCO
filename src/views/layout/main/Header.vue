@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Cookie from 'js-cookie'
 import { useStore } from '../../../stores/index'
@@ -9,14 +9,13 @@ const emit = defineEmits(['toggleLeftDrawerEmit'])
 const router = useRouter()
 const getMenu = useStore().useMenuStore()
 
+const menuData = computed(() => (Cookie.get('menu') ? JSON.parse(Cookie.get('menu')) : getMenu.menu))
+
 const leftDrawerOpen = ref(false)
 
 const toggleLeftDrawer = () => {
     leftDrawerOpen.value = !leftDrawerOpen.value
 }
-
-// TODO: 將 menu 資料存入 store，並動態寫出來
-console.log('getMenu: ', getMenu.menu)
 
 const logout = () => {
     Cookie.remove('token')
@@ -36,36 +35,12 @@ const logout = () => {
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
         <q-list>
             <q-item-label header>Essential Links</q-item-label>
-            <q-item to="/">
+            <q-item v-for="item in menuData" :to="item.to" :key="item.to">
                 <q-item-section avatar>
-                    <q-icon name="home" />
+                    <q-icon :name="item.icon" />
                 </q-item-section>
                 <q-item-section>
-                    <q-item-label>Home</q-item-label>
-                </q-item-section>
-            </q-item>
-            <q-item to="/about">
-                <q-item-section avatar>
-                    <q-icon name="description" />
-                </q-item-section>
-                <q-item-section>
-                    <q-item-label>About</q-item-label>
-                </q-item-section>
-            </q-item>
-            <q-item to="/filter-function">
-                <q-item-section avatar>
-                    <q-icon name="description" />
-                </q-item-section>
-                <q-item-section>
-                    <q-item-label>Filter function</q-item-label>
-                </q-item-section>
-            </q-item>
-            <q-item to="/mock">
-                <q-item-section avatar>
-                    <q-icon name="description" />
-                </q-item-section>
-                <q-item-section>
-                    <q-item-label>Mock Data</q-item-label>
+                    <q-item-label>{{ item.label }}</q-item-label>
                 </q-item-section>
             </q-item>
         </q-list>

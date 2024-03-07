@@ -6,10 +6,11 @@ export const apiMenu = {
     },
 }
 // requestBase 寫在前面當參數
-export const apiGetMac = (params, callback) => {
-    return GET(`/cpi/bcrm-sso`, callback, params)
-}
+// export const apiGetMac = (params, callback) => {
+//     return GET(`/cpi/bcrm-sso`, callback, params)
+// }
 
-export const apiSignIn = (params) => {
-    return POST(`/cpi/auth/login-sso`, params)
-}
+// export const apiSignIn = (params, callback) => {
+//     console.log('123')
+//     return POST(`/cpi/auth/login-sso`, callback, params)
+// }

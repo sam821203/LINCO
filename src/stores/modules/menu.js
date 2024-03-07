@@ -1,16 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
+import Cookie from 'js-cookie'
 
 export const useMenuStore = defineStore('menu', () => {
-    const menu = reactive([1, 2])
+    const menu = ref([])
     const count = ref(1)
 
     const setMenu = (value) => {
-        // menu.push = value
+        menu.value = value
+        Cookie.set('menu', JSON.stringify(value))
     }
 
     const setCount = (num) => {
         count.value += num
     }
-    return { menu, count, setCount }
+
+    return { menu, count, setMenu, setCount }
 })

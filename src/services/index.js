@@ -53,14 +53,7 @@ export const GET = (name, callback, params) => {
     const data = new URLSearchParams(params).toString()
     const url = data ? `${name}?${data}` : name
     return apiInstance
-        .get(url, {
-            // data,
-            // requireBase: 'AA',
-            // headers: {
-            //     'X-Auth-token': 'fd091a4321c9d42d5f0ed817d7e90ed7c82820ab1011864c40034559274713b1',
-            // },
-            raw: false,
-        })
+        .get(url, { raw: false })
         .then((response) => {
             if (callback) callback(response)
         })
@@ -69,7 +62,7 @@ export const GET = (name, callback, params) => {
         })
 }
 
-export const POST = (name, data) => {
+export const POST = (name, callback, data) => {
     return apiInstance
         .post(name, data)
         .then((response) => {
@@ -77,6 +70,7 @@ export const POST = (name, data) => {
             Cookie.set('token', response.token, {
                 expires: 1,
             })
+            if (callback) callback(response)
         })
         .catch((error) => {
             throw error
