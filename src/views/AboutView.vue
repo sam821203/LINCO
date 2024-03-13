@@ -1,25 +1,15 @@
-<script setup>
-import { apiResponsible } from '../services/apis/responsible.js'
-import { ref } from 'vue'
-
-const data = ref(null)
-
-apiResponsible.getResponsible((result) => {
-    data.value = result
-})
-</script>
-
 <template>
-    <div class="about">
-        <ul>
-            <li v-for="sentence in data" :key="sentence.id">{{ sentence.title }}</li>
-        </ul>
-    </div>
+  <div class="about">
+    <h1>This is an about page</h1>
+  </div>
 </template>
 
-<style scoped>
-.about {
+<style>
+@media (min-width: 1024px) {
+  .about {
+    min-height: 100vh;
     display: flex;
     align-items: center;
+  }
 }
 </style>
