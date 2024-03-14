@@ -4,6 +4,8 @@ import { RouterView } from 'vue-router'
 for (let i = 0; i < 100; i++) {
   console.log('index', i)
 }
+
+let str = '我是誰'
 </script>
 
 <template>
