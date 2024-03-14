@@ -12,3 +12,8 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+const func = () => {
+  console.log('Hello World!')
+}
+func()
