@@ -1,24 +1,32 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import { onMounted } from 'vue'
+import { reqLogin } from '@/api/user'
+// import { Plus, Delete, Edit } from '@element-plus/icons-vue'
 
-for (let i = 0; i < 100; i++) {
-  console.log('index', i)
-}
-
-let str = '我是誰'
+onMounted(() => {
+  reqLogin({
+    username: 'admin',
+    password: '111111'
+  }).then((res) => {
+    console.log('res: ', res)
+  })
+})
 </script>
 
 <template>
   <header>
-    <div class="wrapper">
-      <div>App</div>
-    </div>
+    <div></div>
   </header>
 
   <RouterView />
 </template>
 
-<style scoped>
+<style lang="scss">
+h4 {
+  color: $color-red;
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;
@@ -81,3 +89,4 @@ nav a:first-of-type {
   }
 }
 </style>
+@/api
