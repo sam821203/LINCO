@@ -1,27 +1,18 @@
-import HomeView from '../views/HomeView.vue'
+import { RouteRecordRaw } from 'vue-router'
 
-const loginView = () => import('../views/LoginView.vue')
-const ErrorView = () => import('../views/ErrorView.vue')
-
-export const constantRoute = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'layout',
-    component: HomeView
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/IndexPage.vue') }]
   },
+
+  // Always leave this as last one,
+  // but you can also remove it
   {
-    path: '/login',
-    name: 'login',
-    component: loginView
-  },
-  {
-    path: '/error',
-    name: 'error',
-    component: ErrorView
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/error',
-    name: 'Any'
+    path: '/:catchAll(.*)*',
+    component: () => import('pages/ErrorNotFound.vue')
   }
 ]
+
+export default routes
