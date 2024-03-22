@@ -2,12 +2,14 @@
   <div class="login-container q-pa-md" style="max-width: 400px">
     <h4 class="text-center">Sign Up</h4>
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" ref="formElement">
-      <q-input filled v-model="formData.username" label="Your username *" hint="Name and surname" lazy-rules :rules="[
-      val => (val && val.length > 0) || 'Please type something'
+      <q-input filled v-model="formData.email" label="Your email *" hint="請輸入含有 @ 的信箱地址" lazy-rules :rules="[
+      val => (val && val.length > 0) || '請輸入 email 帳號',
+      (val, rules) => rules.email(val) || '請輸入有效的 email 帳號'
     ]" />
 
       <q-input filled type="password" v-model="formData.password" label="Your password *" lazy-rules :rules="[
-      (val) => (val !== null && val !== '') || 'Please type your password'
+      (val) => (val !== null && val !== '') || '請輸入密碼',
+      (val) => (val.length > 7) || '請輸入至少 8 個字元'
     ]" />
 
       <div>
@@ -19,20 +21,29 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { reactive, ref } from 'vue'
+import { firebaseAuth, usersCollection } from '../boot/firebase'
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from 'firebase/firestore'
+import { useUserStore } from 'stores/modules/user';
+
+interface FormData {
+  email: string;
+  password: string;
+}
 
 defineOptions({
   name: 'HomePage'
 })
 
 const $q = useQuasar()
-const router = useRouter()
-
+const userStore = useUserStore();
 const formElement = ref<HTMLFormElement | null>(null)
+// const router = useRouter()
 
 const formData = reactive({
-  username: '',
+  email: '',
   password: ''
 })
 
@@ -41,6 +52,35 @@ const formData = reactive({
 //   { to: '/about', icon: 'description', label: 'About' },
 //   { to: '/filter-function', icon: 'description', label: 'Filter function' }
 // ])
+
+const register = async (data: FormData) => {
+  let userCredential
+  try {
+    userCredential = await createUserWithEmailAndPassword(firebaseAuth, data.email, data.password);
+    const user = userCredential.user;
+    const userDocRef = doc(usersCollection, user.uid)
+
+    const userData = {
+      email: data.email,
+      password: data.password,
+    }
+
+    await setDoc(userDocRef, userData)
+
+    userStore.userLoggedIn = true;
+  } catch (error) {
+    console.log('error: ', error);
+    // const errorMsg = error
+    $q.notify({
+      color: 'negative',
+      textColor: 'white',
+      icon: 'cloud_done',
+      message: 'errorMsg'
+    })
+  }
+
+  console.log('userCredential: ', userCredential);
+}
 
 const onSubmit = async () => {
   const success = formElement.value !== null ? await formElement.value.validate() : false
@@ -51,14 +91,16 @@ const onSubmit = async () => {
       icon: 'cloud_done',
       message: 'Submitted'
     })
-    router.push('/')
+    register(formData)
+    console.log('送出');
+    // router.push('/')
   } else {
     console.log('驗證失敗，用戶至少輸入了一個無效值')
   }
 }
 
 const onReset = () => {
-  formData.username = ''
+  formData.email = ''
   formData.password = ''
 
   if (formElement.value !== null) {
