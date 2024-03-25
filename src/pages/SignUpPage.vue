@@ -2,6 +2,8 @@
   <div class="login-container q-pa-md" style="max-width: 400px">
     <h4 class="text-center">Sign Up</h4>
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" ref="formElement">
+      <q-input filled v-model="formData.name" label="Your username *" lazy-rules
+        :rules="[val => (val && val.length > 0) || '請輸入使用者名稱']" />
       <q-input filled v-model="formData.email" label="Your email *" hint="請輸入含有 @ 的信箱地址" lazy-rules :rules="[
       val => (val && val.length > 0) || '請輸入 email 帳號',
       (val, rules) => rules.email(val) || '請輸入有效的 email 帳號'
@@ -21,28 +23,21 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { reactive, ref } from 'vue'
-import { firebaseAuth, usersCollection } from '../boot/firebase'
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from 'firebase/firestore'
 import { useUserStore } from 'stores/modules/user';
-
-interface FormData {
-  email: string;
-  password: string;
-}
 
 defineOptions({
   name: 'HomePage'
 })
 
 const $q = useQuasar()
-const userStore = useUserStore();
+const { register } = useUserStore();
 const formElement = ref<HTMLFormElement | null>(null)
-// const router = useRouter()
+const router = useRouter()
 
 const formData = reactive({
+  name: '',
   email: '',
   password: ''
 })
@@ -53,35 +48,6 @@ const formData = reactive({
 //   { to: '/filter-function', icon: 'description', label: 'Filter function' }
 // ])
 
-const register = async (data: FormData) => {
-  let userCredential
-  try {
-    userCredential = await createUserWithEmailAndPassword(firebaseAuth, data.email, data.password);
-    const user = userCredential.user;
-    const userDocRef = doc(usersCollection, user.uid)
-
-    const userData = {
-      email: data.email,
-      password: data.password,
-    }
-
-    await setDoc(userDocRef, userData)
-
-    userStore.userLoggedIn = true;
-  } catch (error) {
-    console.log('error: ', error);
-    // const errorMsg = error
-    $q.notify({
-      color: 'negative',
-      textColor: 'white',
-      icon: 'cloud_done',
-      message: 'errorMsg'
-    })
-  }
-
-  console.log('userCredential: ', userCredential);
-}
-
 const onSubmit = async () => {
   const success = formElement.value !== null ? await formElement.value.validate() : false
   if (success) {
@@ -91,15 +57,16 @@ const onSubmit = async () => {
       icon: 'cloud_done',
       message: 'Submitted'
     })
-    register(formData)
+    await register(formData)
     console.log('送出');
-    // router.push('/')
+    router.push('/')
   } else {
     console.log('驗證失敗，用戶至少輸入了一個無效值')
   }
 }
 
 const onReset = () => {
+  formData.name = ''
   formData.email = ''
   formData.password = ''
 

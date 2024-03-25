@@ -24,9 +24,9 @@
           </q-btn>
         </div>
       </div>
-      <div class="text-center q-pa-lg q-mt-xl text-grey-6">Don't have an account?<span class="text-weight-bold
- text--underline"> Sign
-          up</span></div>
+      <div class="text-center q-pa-lg q-mt-xl text-grey-6">Don't have an account?<q-btn to="/signup" label="Sign up"
+          flat padding="sm" class="text-weight-bold
+ text--underline" /></div>
     </q-form>
   </div>
 </template>
