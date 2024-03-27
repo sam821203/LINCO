@@ -19,20 +19,38 @@ export const useUserStore = defineStore("user", () => {
   const userLoggedIn = ref(false);
   const $q = useQuasar();
 
-  const getCurrentUser = () => {
+  const checkUserStatus = () => {
     onAuthStateChanged(firebaseAuth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         // const uid = user.uid;
         console.log("user: ", user);
+        console.log("signed in");
         // ...
       } else {
         // User is signed out
         // ...
+        console.log("signed out");
       }
     });
   };
+
+  const gerCurrentUser = () => {
+    const user = firebaseAuth.currentUser;
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/auth.user
+      // const uid = user.uid;
+      console.log("user: ", user);
+      console.log("signed in");
+      // ...
+    } else {
+      // User is signed out
+      // ...
+      console.log("signed out");
+    }
+  }
 
   const register = async (data: FormData) => {
     try {
@@ -71,5 +89,5 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  return { userLoggedIn, register, getCurrentUser };
+  return { userLoggedIn, register, checkUserStatus, gerCurrentUser };
 });

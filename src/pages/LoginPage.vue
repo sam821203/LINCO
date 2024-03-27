@@ -35,6 +35,7 @@
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { reactive, ref } from 'vue'
+import { useUserStore } from 'stores/modules/user';
 
 defineOptions({
   name: 'HomePage'
@@ -42,6 +43,7 @@ defineOptions({
 
 const $q = useQuasar()
 const router = useRouter()
+const { checkUserStatus } = useUserStore();
 
 const formElement = ref<HTMLFormElement | null>(null)
 
@@ -65,6 +67,7 @@ const onSubmit = async () => {
       icon: 'cloud_done',
       message: 'Submitted'
     })
+    checkUserStatus()
     router.push('/')
   } else {
     console.log('驗證失敗，用戶至少輸入了一個無效值')
