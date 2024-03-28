@@ -3,8 +3,8 @@ import { ref } from "vue";
 import { firebaseAuth, usersCollection } from "../../boot/firebase";
 import {
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   updateProfile,
-  onAuthStateChanged,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useQuasar } from "quasar";
@@ -19,30 +19,13 @@ export const useUserStore = defineStore("user", () => {
   const userLoggedIn = ref(false);
   const $q = useQuasar();
 
-  const checkUserStatus = () => {
-    onAuthStateChanged(firebaseAuth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        // const uid = user.uid;
-        console.log("user: ", user);
-        console.log("signed in");
-        // ...
-      } else {
-        // User is signed out
-        // ...
-        console.log("signed out");
-      }
-    });
-  };
-
   const gerCurrentUser = () => {
     const user = firebaseAuth.currentUser;
     if (user) {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/auth.user
       // const uid = user.uid;
-      console.log("user: ", user);
+      console.log("user 222: ", user);
       console.log("signed in");
       // ...
     } else {
@@ -50,7 +33,7 @@ export const useUserStore = defineStore("user", () => {
       // ...
       console.log("signed out");
     }
-  }
+  };
 
   const register = async (data: FormData) => {
     try {
@@ -89,5 +72,17 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  return { userLoggedIn, register, checkUserStatus, gerCurrentUser };
+  const authenticate = async (formData: {
+    email: string;
+    password: string;
+  }) => {
+    await signInWithEmailAndPassword(
+      firebaseAuth,
+      formData.email,
+      formData.password
+    );
+
+    userLoggedIn.value = true;
+  };
+  return { userLoggedIn, register, gerCurrentUser, authenticate };
 });

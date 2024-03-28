@@ -2,7 +2,7 @@
   <div class="login-container q-pa-md" style="max-width: 400px">
     <h4 class="text-center">Login</h4>
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" ref="formElement">
-      <q-input filled v-model="formData.username" label="Your username *" hint="Name and surname" lazy-rules
+      <q-input filled v-model="formData.email" label="Your email *" hint="email with @" lazy-rules
         :rules="[(val) => (val && val.length > 0) || 'Please type something']" />
 
       <q-input filled type="password" v-model="formData.password" label="Your password *" lazy-rules
@@ -43,12 +43,12 @@ defineOptions({
 
 const $q = useQuasar()
 const router = useRouter()
-const { checkUserStatus } = useUserStore();
+const { authenticate } = useUserStore()
 
 const formElement = ref<HTMLFormElement | null>(null)
 
 const formData = reactive({
-  username: '',
+  email: '',
   password: ''
 })
 
@@ -58,24 +58,41 @@ const formData = reactive({
 //   { to: '/filter-function', icon: 'description', label: 'Filter function' }
 // ])
 
+const triggerPositive = () => {
+  $q.notify({
+    color: 'positive',
+    textColor: 'white',
+    icon: 'cloud_done',
+    message: '登入成功'
+  })
+}
+
+const triggerNegative = (errorMsg: string) => {
+  $q.notify({
+    type: 'negative',
+    message: errorMsg
+  })
+}
+
 const onSubmit = async () => {
   const success = formElement.value !== null ? await formElement.value.validate() : false
   if (success) {
-    $q.notify({
-      color: 'green-4',
-      textColor: 'white',
-      icon: 'cloud_done',
-      message: 'Submitted'
-    })
-    checkUserStatus()
-    router.push('/')
+    try {
+      await authenticate(formData)
+      router.push('/')
+    } catch (error) {
+      const message = '該用戶不存在'
+      triggerNegative(message)
+      return
+    }
+    triggerPositive()
   } else {
     console.log('驗證失敗，用戶至少輸入了一個無效值')
   }
 }
 
 const onReset = () => {
-  formData.username = ''
+  formData.email = ''
   formData.password = ''
 
   if (formElement.value !== null) {
