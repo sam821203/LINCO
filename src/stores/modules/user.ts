@@ -22,15 +22,9 @@ export const useUserStore = defineStore("user", () => {
   const gerCurrentUser = () => {
     const user = firebaseAuth.currentUser;
     if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
-      // const uid = user.uid;
       console.log("user 222: ", user);
       console.log("signed in");
-      // ...
     } else {
-      // User is signed out
-      // ...
       console.log("signed out");
     }
   };
@@ -84,5 +78,12 @@ export const useUserStore = defineStore("user", () => {
 
     userLoggedIn.value = true;
   };
-  return { userLoggedIn, register, gerCurrentUser, authenticate };
+
+  const signOut = async () => {
+    await firebaseAuth.signOut();
+
+    userLoggedIn.value = false;
+  };
+
+  return { userLoggedIn, register, gerCurrentUser, authenticate, signOut };
 });

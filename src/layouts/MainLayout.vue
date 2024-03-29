@@ -6,6 +6,7 @@
           LINCO
         </q-toolbar-title>
         <q-btn class="large-screen-only" flat @click="drawer = !drawer" round dense icon="menu" padding="xs" />
+        <button @click.prevent="logOut">登出</button>
       </q-toolbar>
     </q-header>
 
@@ -80,12 +81,22 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useUserStore } from 'stores/modules/user';
+import { useRouter } from "vue-router";
 
 defineOptions({
   name: 'MainLayout'
 })
 
+const { signOut } = useUserStore()
+const router = useRouter();
+
 const drawer = ref(false)
+
+const logOut = () => {
+  signOut()
+  router.push("/login");
+}
 </script>
 
 <style lang="scss" scoped>
