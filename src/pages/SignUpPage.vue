@@ -17,6 +17,17 @@
       <div>
         <q-btn class="full-width" label="Sign Up" type="submit" color="primary" rounded size="lg" />
       </div>
+      <div class="text-center q-gutter-md">
+        <q-btn round color="white" @click="registerWithGoogle">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="">
+        </q-btn>
+        <q-btn round color="white">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="q-pa-sm" alt="">
+        </q-btn>
+        <q-btn round color="white">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg" class="q-pa-sm" alt="">
+        </q-btn>
+      </div>
     </q-form>
   </div>
 </template>
@@ -32,7 +43,7 @@ defineOptions({
 })
 
 const $q = useQuasar()
-const { register } = useUserStore();
+const { register, registerWithGoogle } = useUserStore();
 const formElement = ref<HTMLFormElement | null>(null)
 const router = useRouter()
 

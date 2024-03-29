@@ -11,7 +11,7 @@
       <div>
         <q-btn class="full-width" label="Login" type="submit" color="primary" rounded size="lg" />
         <div class="text-center q-pa-lg text-grey-6">or connect with</div>
-        <div class="text-center q-gutter-md">
+        <!-- <div class="text-center q-gutter-md">
           <q-btn round color="white">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="">
           </q-btn>
@@ -22,7 +22,7 @@
           <q-btn round color="white">
             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg" class="q-pa-sm" alt="">
           </q-btn>
-        </div>
+        </div> -->
       </div>
       <div class="text-center q-pa-lg q-mt-xl text-grey-6">Don't have an account?<q-btn to="/signup" label="Sign up"
           flat padding="sm" class="text-weight-bold

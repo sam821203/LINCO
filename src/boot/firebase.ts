@@ -15,12 +15,10 @@ const firebaseConfig = {
   appId: "1:855822114334:web:a0bae645d99cf337d7180f",
 };
 
-// Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
-// Initialize Firebase Authentication and get a reference to the service
 const firebaseAuth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
-
+// const provider = new GoogleAuthProvider();
 const usersCollection = collection(db, "users");
 
 export { firebaseApp, firebaseAuth, db, usersCollection };
