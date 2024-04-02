@@ -1,17 +1,15 @@
 <template>
-  <q-page class="layout--main">
-    <h5>Home</h5>
-    <button @click="gerCurrentUser">button</button>
+  <q-page class="layout--main row items-center justify-evenly">
+    <div>
+      <h5>Home</h5>
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from 'stores/modules/user';
 
 defineOptions({
   name: 'HomePage'
 })
-
-const { gerCurrentUser } = useUserStore();
 
 </script>

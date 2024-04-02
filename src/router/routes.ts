@@ -19,6 +19,21 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: "/", component: () => import("pages/HomePage.vue") },
       { path: "/friends", component: () => import("pages/FriendsPage.vue") },
+      {
+        path: "/profile",
+        component: () => import("pages/ProfilePage.vue"),
+        // TODO: 轉網址問題
+        // children: [
+        //   {
+        //     path: "/profile/personalData",
+        //     component: () => import("pages/profile/PersonalData.vue"),
+        //   },
+        // ],
+      },
+      {
+        path: "/profile/personalData",
+        component: () => import("pages/profile/PersonalData.vue"),
+      },
     ],
   },
 

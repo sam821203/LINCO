@@ -1,73 +1,33 @@
 <template>
   <div class="login-container q-pa-md" style="max-width: 400px">
     <h4 class="text-center">Login</h4>
-    <q-form
-      @submit="onSubmit"
-      @reset="onReset"
-      class="q-gutter-md"
-      ref="formElement"
-    >
-      <q-input
-        filled
-        v-model="formData.email"
-        label="Your email *"
-        hint="email with @"
-        lazy-rules
-        :rules="[(val) => (val && val.length > 0) || 'Please type something']"
-      />
+    <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md" ref="formElement">
+      <q-input filled v-model="formData.email" label="Your email *" hint="email with @" lazy-rules
+        :rules="[(val) => (val && val.length > 0) || 'Please type something']" />
 
-      <q-input
-        filled
-        type="password"
-        v-model="formData.password"
-        label="Your password *"
-        lazy-rules
-        :rules="[
-          (val) => (val !== null && val !== '') || 'Please type your password',
-        ]"
-      />
+      <q-input filled type="password" v-model="formData.password" label="Your password *" lazy-rules :rules="[
+      (val) => (val !== null && val !== '') || 'Please type your password',
+    ]" />
 
       <div>
-        <q-btn
-          class="full-width"
-          label="Login"
-          type="submit"
-          color="primary"
-          rounded
-          size="lg"
-        />
+        <q-btn class="full-width" label="Login" type="submit" color="primary" rounded size="lg" />
         <div class="text-center q-pa-lg text-grey-6">or connect with</div>
         <div class="text-center q-gutter-md">
-          <q-btn round color="white" @click="registerWithGoogle">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-              alt=""
-            />
+          <q-btn round color="white" @click="loginWithGoogle">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="" />
           </q-btn>
           <q-btn round color="white">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg"
-              class="q-pa-sm"
-              alt=""
-            />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="q-pa-sm"
+              alt="" />
           </q-btn>
           <q-btn round color="white">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"
-              class="q-pa-sm"
-              alt=""
-            />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg" class="q-pa-sm" alt="" />
           </q-btn>
         </div>
       </div>
       <div class="text-center q-pa-lg q-mt-xl text-grey-6">
-        Don't have an account?<q-btn
-          to="/signup"
-          label="Sign up"
-          flat
-          padding="sm"
-          class="text-weight-bold text--underline"
-        />
+        Don't have an account?<q-btn to="/signup" label="Sign up" flat padding="sm"
+          class="text-weight-bold text--underline" />
       </div>
     </q-form>
   </div>
@@ -85,7 +45,7 @@ defineOptions({
 
 const $q = useQuasar();
 const router = useRouter();
-const { authenticate, registerWithGoogle } = useUserStore();
+const { authenticate, loginWithGoogle } = useUserStore();
 
 const formElement = ref<HTMLFormElement | null>(null);
 

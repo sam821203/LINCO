@@ -7,6 +7,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  // signInWithRedirect,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useQuasar } from "quasar";
@@ -17,17 +18,20 @@ interface FormData {
   password: string;
 }
 
-const googleProvider = new GoogleAuthProvider();
-
 export const useUserStore = defineStore("user", () => {
+  // Create an instance of the Google provider object
+  const googleProvider = new GoogleAuthProvider();
+
+  googleProvider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+
   const userLoggedIn = ref(false);
   const $q = useQuasar();
 
-  const gerCurrentUser = () => {
+  const getCurrentUser = () => {
     const user = firebaseAuth.currentUser;
     if (user) {
-      console.log("user 222: ", user);
       console.log("signed in");
+      return user;
     } else {
       console.log("signed out");
     }
@@ -84,24 +88,25 @@ export const useUserStore = defineStore("user", () => {
   //   }
   // };
 
-  const registerWithGoogle = async () => {
+  const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(firebaseAuth, googleProvider);
       console.log("result: ", result);
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential?.accessToken;
+      // const credential = GoogleAuthProvider.credentialFromResult(result);
+      // const token = credential?.accessToken;
       const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-      console.log("token: ", token);
-      console.log("user: ", user);
+
+      // Create user collection reference
+      const userDocRef = doc(usersCollection, user.uid);
+
+      const userData = {
+        name: user.displayName,
+        email: user.email,
+      };
+
+      // Add user data to users collection
+      await setDoc(userDocRef, userData);
     } catch (error) {
-      // const errorCode = error.code;
-      // const errorMessage = error.message;
-      // // The email of the user's account used.
-      // const email = error.customData.email;
-      // // The AuthCredential type that was used.
-      // const credential = GoogleAuthProvider.credentialFromError(error);
       console.log("error: ", error);
     }
   };
@@ -125,14 +130,12 @@ export const useUserStore = defineStore("user", () => {
     userLoggedIn.value = false;
   };
 
-  googleProvider.addScope("https://www.googleapis.com/auth/contacts.readonly");
-
   return {
     userLoggedIn,
     register,
-    gerCurrentUser,
+    getCurrentUser,
     authenticate,
     signOut,
-    registerWithGoogle,
+    loginWithGoogle,
   };
 });
