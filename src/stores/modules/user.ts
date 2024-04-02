@@ -17,7 +17,7 @@ interface FormData {
   password: string;
 }
 
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
 export const useUserStore = defineStore("user", () => {
   const userLoggedIn = ref(false);
@@ -70,30 +70,40 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  // const socialLogIn = async (e) => {
+  //   const {
+  //     target: { name },
+  //   } = e;
+
+  //   let provider;
+
+  //   if (name === "google") {
+  //     provider = new GoogleAuthProvider();
+  //   } else if (name === "facebook") {
+  //     // create github provider
+  //   }
+  // };
+
   const registerWithGoogle = async () => {
-    signInWithPopup(firebaseAuth, provider)
-      .then((result) => {
-        console.log("result: ", result);
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-        console.log("token: ", token);
-        console.log("user: ", user);
-      })
-      .catch((error: string) => {
-        // Handle Errors here.
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // // The email of the user's account used.
-        // const email = error.customData.email;
-        // // The AuthCredential type that was used.
-        // const credential = GoogleAuthProvider.credentialFromError(error);
-        console.log("error: ", error);
-      });
+    try {
+      const result = await signInWithPopup(firebaseAuth, googleProvider);
+      console.log("result: ", result);
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential?.accessToken;
+      const user = result.user;
+      // IdP data available using getAdditionalUserInfo(result)
+      console.log("token: ", token);
+      console.log("user: ", user);
+    } catch (error) {
+      // const errorCode = error.code;
+      // const errorMessage = error.message;
+      // // The email of the user's account used.
+      // const email = error.customData.email;
+      // // The AuthCredential type that was used.
+      // const credential = GoogleAuthProvider.credentialFromError(error);
+      console.log("error: ", error);
+    }
   };
 
   const authenticate = async (formData: {
@@ -115,7 +125,7 @@ export const useUserStore = defineStore("user", () => {
     userLoggedIn.value = false;
   };
 
-  provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+  googleProvider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 
   return {
     userLoggedIn,
