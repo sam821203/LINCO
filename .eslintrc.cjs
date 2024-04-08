@@ -79,7 +79,7 @@ module.exports = {
     // The core 'import/named' rules
     // does not work with type definitions
     "import/named": "off",
-
+    indent: "off",
     "prefer-promise-reject-errors": "off",
 
     quotes: "off",
