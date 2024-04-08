@@ -19,36 +19,31 @@
           rounded
           class="q-mb-md"
         ></q-img>
-      </div>
-      <div class="q-relative-position">
-        <q-file
-          v-model="formData.image"
-          label="Pick one file"
-          filled
-          style=""
-          class="q-mb-lg"
-          @update:model-value="handleUpload()"
-        ></q-file>
-        <!-- <q-file
-          v-model="formData.image"
-          label="Pick one file"
-          filled
-          style="
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            cursor: pointer;
-          "
-          @update:model-value="handleUpload()"
-          multiple
-        ></q-file> -->
-        <!-- <q-icon
-          name="attachment"
-          class="q-absolute-full clickable"
-          style="pointer-events: none"
-          size="48px"
-        ></q-icon> -->
+        <div class="relative-position">
+          <!-- <q-file
+            v-model="formData.image"
+            label="Pick one file"
+            filled
+            style=""
+            class="q-mb-lg"
+            @update:model-value="handleUpload()"
+          ></q-file> -->
+          <q-file
+            v-model="formData.image"
+            label="Pick one file"
+            filled
+            style="opacity: 0; cursor: pointer"
+            @update:model-value="handleUpload()"
+            multiple
+            class="absolute-full"
+          ></q-file>
+          <q-icon
+            name="attachment"
+            class="q-absolute-full clickable"
+            style="pointer-events: none"
+            size="48px"
+          ></q-icon>
+        </div>
       </div>
       <!-- TODO: 思考這裡該如何用成編輯 -->
       <!-- 作為一個使用者，我可以新增個人和公司的檔案 -->
@@ -88,7 +83,7 @@
         <q-select filled v-model="model" :options="options" label="Filled" />
         <div class="q-gutter-sm">
           <q-btn
-            label="更新"
+            label="儲存"
             type="submit"
             color="primary"
             class="full-width"
@@ -135,8 +130,11 @@ const options = reactive(["Google", "Facebook", "Twitter", "Apple", "Oracle"]);
 
 const handleUpload = () => {
   console.log("handleUpload is triggered");
+  console.log("formData.image: ", formData.image);
   if (formData.image) {
-    formData.imageUrl = URL.createObjectURL(formData.image);
+    formData.imageUrl = window.URL.createObjectURL(
+      new Blob(formData.image, { type: "application/zip" })
+    );
   }
 };
 
