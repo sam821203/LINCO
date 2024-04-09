@@ -6,14 +6,16 @@
           <q-item>
             <q-item-section top avatar>
               <q-avatar rounded size="56px">
-                <img src="https://cdn.quasar.dev/img/avatar.png">
+                <img src="https://cdn.quasar.dev/img/avatar.png" />
               </q-avatar>
             </q-item-section>
 
             <q-item-section>
               <q-item-label>Single line item</q-item-label>
-              <q-item-label caption>Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit
-                elit.</q-item-label>
+              <q-item-label caption
+                >Secondary line text. Lorem ipsum dolor sit amet, consectetur
+                adipiscit elit.</q-item-label
+              >
             </q-item-section>
           </q-item>
 
@@ -45,21 +47,20 @@
         </q-list>
       </div>
     </div>
-
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from 'stores/modules/user';
+import { useUserStore } from "stores/modules/user";
 import { useRouter } from "vue-router";
-import { reactive } from 'vue'
+import { reactive } from "vue";
 
 defineOptions({
-  name: 'ProfilePage.vue'
-})
+  name: "ProfilePage.vue",
+});
 
 const router = useRouter();
-const { signOut } = useUserStore()
+const { signOut } = useUserStore();
 const { getCurrentUser } = useUserStore();
 
 interface UserData {
@@ -69,25 +70,25 @@ interface UserData {
 }
 
 const userData: UserData = reactive({
-  email: '',
-  displayName: '',
-  uid: '',
-})
+  email: "",
+  displayName: "",
+  uid: "",
+});
 
 const addNewUser = () => {
   // 取得個人資料
   const currentUser = getCurrentUser();
 
   if (currentUser) {
-    userData.email = currentUser.email || '';
-    userData.displayName = currentUser.displayName || '';
-    userData.uid = currentUser.uid || '';
+    userData.email = currentUser.email || "";
+    userData.displayName = currentUser.displayName || "";
+    userData.uid = currentUser.uid || "";
 
-    console.log('userData', userData);
+    console.log("userData", userData);
   }
-}
+};
 
-addNewUser()
+addNewUser();
 
 // const directToPersonalData = () => {
 //   console.log('1');
@@ -96,7 +97,7 @@ addNewUser()
 // }
 
 const logOut = () => {
-  signOut()
+  signOut();
   router.push("/login");
-}
+};
 </script>

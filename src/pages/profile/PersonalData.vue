@@ -19,23 +19,17 @@
           rounded
           class="q-mb-md"
         ></q-img>
-        <div class="relative-position">
-          <!-- <q-file
-            v-model="formData.image"
-            label="Pick one file"
-            filled
-            style=""
-            class="q-mb-lg"
-            @update:model-value="handleUpload()"
-          ></q-file> -->
+        <div class="relative-position q-pt-none">
           <q-file
             v-model="formData.image"
             label="Pick one file"
-            filled
             style="opacity: 0; cursor: pointer"
-            @update:model-value="handleUpload()"
+            class="absolute-full q-mb-lg"
+            filled
             multiple
-            class="absolute-full"
+            :filter="checkFileSize"
+            @update:model-value="handleUpload()"
+            @rejected="onRejected"
           ></q-file>
           <q-icon
             name="attachment"
@@ -106,6 +100,9 @@ import { useQuasar } from "quasar";
 import { ref, reactive } from "vue";
 import { useUserStore } from "../../stores/modules/user";
 import { useRouter } from "vue-router";
+import { db } from "../../boot/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { getStorage, ref as storageRef, uploadBytes } from "firebase/storage";
 
 defineOptions({
   name: "PersonalData",
@@ -113,6 +110,7 @@ defineOptions({
 
 const $q = useQuasar();
 const router = useRouter();
+const storage = getStorage();
 const { getCurrentUser } = useUserStore();
 
 const formData = reactive({
@@ -127,10 +125,28 @@ const formData = reactive({
 const model = ref(null);
 
 const options = reactive(["Google", "Facebook", "Twitter", "Apple", "Oracle"]);
+const currentUser = getCurrentUser();
+
+interface QRejectedEntry {
+  failedPropValidation:
+    | "accept"
+    | "max-file-size"
+    | "max-total-size"
+    | "filter"
+    | "max-files"
+    | "duplicate";
+  file: File;
+}
+
+interface UserForm {
+  age: string;
+  email: string;
+  image: File | null;
+  imageUrl: string;
+  name: string;
+}
 
 const handleUpload = () => {
-  console.log("handleUpload is triggered");
-  console.log("formData.image: ", formData.image);
   if (formData.image) {
     formData.imageUrl = window.URL.createObjectURL(
       new Blob(formData.image, { type: "application/zip" })
@@ -140,8 +156,6 @@ const handleUpload = () => {
 
 // 取得目前使用者資料
 const initUserData = () => {
-  const currentUser = getCurrentUser();
-
   if (currentUser) {
     console.log("@@");
     formData.email = currentUser.email || "";
@@ -151,27 +165,59 @@ const initUserData = () => {
 
 initUserData();
 
-// const checkFileSize = (files: FileList | null) => {
-//   if (!files) return []; // 如果 files 為空，返回空陣列
+const checkFileSize = (files: readonly File[] | FileList) => {
+  if (!files) return []; // 如果 files 為空，返回空陣列
 
-//   // 將 FileList 轉換為陣列
-//   const filesArray = Array.from(files);
+  // 將 FileList 轉換為陣列
+  const filesArray = Array.from(files);
 
-//   console.log("filesArray: ", filesArray);
-//   // 使用 filter 方法篩選符合條件的文件
-//   const filteredFiles = filesArray.filter((file) => file.size < 5120);
+  console.log("filesArray: ", filesArray);
+  // 使用 filter 方法篩選符合條件的文件
+  const filteredFiles = filesArray.filter((file) => file.size < 200000);
 
-//   return filteredFiles;
-// };
+  return filteredFiles;
+};
 
-// const onRejected = (rejectedEntries) => {
-//   // Notify plugin needs to be installed
-//   // https://quasar.dev/quasar-plugins/notify#Installation
-//   $q.notify({
-//     type: "negative",
-//     message: `${rejectedEntries.length} file(s) did not pass validation constraints`,
-//   });
-// };
+const onRejected = (rejectedEntries: QRejectedEntry[]): void => {
+  console.log("rejectedEntries: ", rejectedEntries);
+  $q.notify({
+    type: "negative",
+    message: `${rejectedEntries.length} file(s) did not pass validation constraints`,
+  });
+};
+
+const updateData = async (formData: UserForm) => {
+  // Add a new document in collection "users"
+  // await setDoc(doc(db, "users", formData.name), {
+  //   name: formData.name,
+  //   email: formData.email,
+  //   image: formData.image,
+  //   imageUrl: formData.imageUrl,
+  //   age: formData.age,
+  // });
+
+  console.log("route.params.id: ", currentUser);
+
+  if (currentUser !== undefined) {
+    const userRef = doc(db, "users", currentUser.uid);
+    const photoRef = storageRef(storage, `photos/${formData.name}`);
+
+    await updateDoc(userRef, {
+      name: formData.name,
+      email: formData.email,
+      image: formData.image,
+      imageUrl: formData.imageUrl,
+      age: formData.age,
+    });
+
+    // 'file' comes from the Blob or File API
+    // TODO: 確認無法上載 file 原因
+    uploadBytes(photoRef, formData.image).then((snapshot) => {
+      console.log("snapshot: ", snapshot);
+      console.log("Uploaded a blob or file!");
+    });
+  }
+};
 
 const onSubmit = () => {
   console.log("formData: ", formData);
@@ -181,6 +227,9 @@ const onSubmit = () => {
     icon: "cloud_done",
     message: "Submitted",
   });
+
+  // TODO: 送去 firebase
+  updateData(formData);
 };
 
 const onReset = () => {
@@ -188,4 +237,6 @@ const onReset = () => {
   formData.age = "";
   formData.email = "";
 };
+
+// TODO: 當刷新頁面時，資料可以保存
 </script>
