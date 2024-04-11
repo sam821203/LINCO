@@ -72,6 +72,9 @@ export const useUserStore = defineStore("user", () => {
         message: "errorMsg",
       });
     }
+
+    // 重新載入頁面
+    // window.location.reload();
   };
 
   // const socialLogIn = async (e) => {

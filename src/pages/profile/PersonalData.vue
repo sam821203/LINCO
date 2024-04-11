@@ -28,7 +28,7 @@
             filled
             multiple
             :filter="checkFileSize"
-            @update:model-value="handleUpload()"
+            @update:model-value="handleUpload"
             @rejected="onRejected"
           ></q-file>
           <q-icon
@@ -41,13 +41,6 @@
       </div>
       <!-- TODO: 思考這裡該如何用成編輯 -->
       <!-- 作為一個使用者，我可以新增個人和公司的檔案 -->
-      <!--
-        1.姓名
-        2.email
-        3.年紀
-        4.職業
-        5.公司名稱
-       -->
       <q-form
         @submit="onSubmit"
         @reset="onReset"
@@ -102,7 +95,11 @@ import { useUserStore } from "../../stores/modules/user";
 import { useRouter } from "vue-router";
 import { db } from "../../boot/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { getStorage, ref as storageRef, uploadBytes } from "firebase/storage";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytesResumable,
+} from "firebase/storage";
 
 defineOptions({
   name: "PersonalData",
@@ -112,6 +109,12 @@ const $q = useQuasar();
 const router = useRouter();
 const storage = getStorage();
 const { getCurrentUser } = useUserStore();
+
+// Create the file metadata
+/** @type {any} */
+const metadata = {
+  contentType: "image/jpeg",
+};
 
 const formData = reactive({
   name: "",
@@ -146,7 +149,10 @@ interface UserForm {
   name: string;
 }
 
-const handleUpload = () => {
+const handleUpload = (files: File[] | FileList) => {
+  // const imageFile = files[0]
+  // formData.image = imageFile;
+  console.log("handleUpload files: ", files[0]);
   if (formData.image) {
     formData.imageUrl = window.URL.createObjectURL(
       new Blob(formData.image, { type: "application/zip" })
@@ -167,13 +173,14 @@ initUserData();
 
 const checkFileSize = (files: readonly File[] | FileList) => {
   if (!files) return []; // 如果 files 為空，返回空陣列
+  console.log("formData: ", formData);
 
+  console.log("files: ", files);
   // 將 FileList 轉換為陣列
   const filesArray = Array.from(files);
 
-  console.log("filesArray: ", filesArray);
   // 使用 filter 方法篩選符合條件的文件
-  const filteredFiles = filesArray.filter((file) => file.size < 200000);
+  const filteredFiles = filesArray.filter((file) => file.size < 2000000);
 
   return filteredFiles;
 };
@@ -184,6 +191,57 @@ const onRejected = (rejectedEntries: QRejectedEntry[]): void => {
     type: "negative",
     message: `${rejectedEntries.length} file(s) did not pass validation constraints`,
   });
+};
+
+// const getAsByteArray = async (file: File | null) => {
+//   const arrBuffer = await file?.arrayBuffer();
+//   console.log("arrBuffer: ", arrBuffer);
+//   // return new Uint8Array(arrBuffer);
+// };
+
+const updateImageFile = () => {
+  if (formData.image !== null) {
+    const selectedFile = formData.image;
+    const photoRef = storageRef(storage, `photos/${formData.name}`);
+    console.log("photoRef: ", photoRef);
+    console.log("selectedFile: ", selectedFile);
+
+    // const fileByteArray = getAsByteArray(selectedFile);
+    // console.log("fileByteArray: ", fileByteArray);
+
+    // 'file' comes from the Blob or File API
+    // 參考 voice verse 的做法
+    // TODO: 上傳的不是圖片檔案
+    // uploadBytes(photoRef, selectedFile).then((snapshot) => {
+    //   console.log("snapshot: ", snapshot);
+    //   console.log("Uploaded a blob or file!");
+    // });
+
+    const uploadTask = uploadBytesResumable(photoRef, selectedFile, metadata);
+    console.log("uploadTask: ", uploadTask);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            break;
+        }
+      },
+      (error) => {
+        console.log(error.message);
+      },
+      async () => {
+        try {
+          console.log("success");
+        } catch (error) {
+          console.error("上傳或刪除操作錯誤：", error);
+        }
+      }
+    );
+  }
 };
 
 const updateData = async (formData: UserForm) => {
@@ -200,22 +258,18 @@ const updateData = async (formData: UserForm) => {
 
   if (currentUser !== undefined) {
     const userRef = doc(db, "users", currentUser.uid);
-    const photoRef = storageRef(storage, `photos/${formData.name}`);
 
+    console.log("userRef: ", userRef);
+    console.log("formData.image: ", formData.image);
     await updateDoc(userRef, {
       name: formData.name,
       email: formData.email,
-      image: formData.image,
+      // image: formData.image,
       imageUrl: formData.imageUrl,
       age: formData.age,
     });
 
-    // 'file' comes from the Blob or File API
-    // TODO: 確認無法上載 file 原因
-    uploadBytes(photoRef, formData.image).then((snapshot) => {
-      console.log("snapshot: ", snapshot);
-      console.log("Uploaded a blob or file!");
-    });
+    updateImageFile();
   }
 };
 

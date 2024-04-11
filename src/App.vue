@@ -3,19 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from 'stores/modules/user';
+import { useUserStore } from "stores/modules/user";
 import { firebaseAuth } from "../src/boot/firebase";
-import { storeToRefs } from 'pinia'
-import {
-  onAuthStateChanged,
-} from "firebase/auth";
+import { storeToRefs } from "pinia";
+import { onAuthStateChanged } from "firebase/auth";
 
 defineOptions({
-  name: 'App'
-})
+  name: "App",
+});
 
-const { userLoggedIn } = storeToRefs(useUserStore())
-// const { getCurrentUser } = useUserStore()
+const { userLoggedIn } = storeToRefs(useUserStore());
+// const { getCurrentUser } = useUserStore();
 
 onAuthStateChanged(firebaseAuth, (user) => {
   if (user) {

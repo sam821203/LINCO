@@ -33,7 +33,7 @@
 
           <q-separator spaced />
 
-          <q-item @click.prevent="logOut">
+          <q-item clickable @click.prevent="logOut">
             <q-item-section avatar>
               <q-icon color="primary" name="eva-log-out-outline" />
             </q-item-section>
@@ -54,6 +54,7 @@
 import { useUserStore } from "stores/modules/user";
 import { useRouter } from "vue-router";
 import { reactive } from "vue";
+import { storeToRefs } from "pinia";
 
 defineOptions({
   name: "ProfilePage.vue",
@@ -62,6 +63,7 @@ defineOptions({
 const router = useRouter();
 const { signOut } = useUserStore();
 const { getCurrentUser } = useUserStore();
+const { userLoggedIn } = storeToRefs(useUserStore());
 
 interface UserData {
   displayName: string;
@@ -97,7 +99,9 @@ addNewUser();
 // }
 
 const logOut = () => {
+  console.log("Sign out @@@");
   signOut();
   router.push("/login");
+  userLoggedIn.value = false;
 };
 </script>
