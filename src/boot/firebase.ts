@@ -5,6 +5,9 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection } from "firebase/firestore";
 // import { getStorage } from 'firebase/storage'
+import firebase from 'firebase/compat/app';
+import * as firebaseui from 'firebaseui'
+import 'firebaseui/dist/firebaseui.css'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {

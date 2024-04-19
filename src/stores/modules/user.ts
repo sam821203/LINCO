@@ -91,6 +91,8 @@ export const useUserStore = defineStore("user", () => {
   //   }
   // };
 
+  // TODO: 使用 firebase 和 axios-mock-adapter 的差別
+  // firebase 可以用來儲存會員資料，但是有辦法解決 google 登入的問題嗎?
   const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(firebaseAuth, googleProvider);
